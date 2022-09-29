@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   build:
-    name: Build and test
+    name: Build, test and push to Docker
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -26,13 +26,13 @@ jobs:
       run: npm run test
       working-directory: ./DotnetTemplate.Web
 
-    - name: Build image
+    - name: Build Docker image
       run: docker build --tag module8 .
 
     - name: Login to Docker Hub
       run: docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-    - name: Tag image
+    - name: Tag Docker image
       run: docker tag module8 cuffindall/module8
 
     - name: Publish to Docker Hub
