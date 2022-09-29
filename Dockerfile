@@ -1,27 +1,32 @@
-# Base image
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as base
-
-# Update image
-RUN apt-get update
-
+### Build stage image
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-stage
 # Download NPM
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-
 # Install Node
 RUN apt-get install -y nodejs
-
+# Update image
+RUN apt-get update && apt-get install -y build-essential
+# Set working dir
+WORKDIR /app
 # Copy files
-COPY DotnetTemplate.Web DotnetTemplate.Web
-WORKDIR /DotnetTemplate.Web
+COPY DotnetTemplate.Web/ ./
+# Build
+RUN dotnet publish -c Release -o /dist
 
-# Build app
-RUN dotnet build
-RUN npm install
-RUN npm run build
 
-# Run app
-#RUN dotnet run
-ENTRYPOINT [ "dotnet", "run" ]
+### Final image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+# Set working dir
+WORKDIR /dist
+# Copy file
+COPY --from=build-stage /dist /dist/
+# Set entry point
+ENTRYPOINT ["dotnet", "DotnetTemplate.Web.dll"]
+
+
+
+
+
 
 ### In the terminal...build and run
 # docker build --tag module8 .
