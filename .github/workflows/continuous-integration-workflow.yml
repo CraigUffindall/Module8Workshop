@@ -26,6 +26,7 @@ jobs:
       working-directory: ./DotnetTemplate.Web
 
   CD_Docker_Hub:
+    if: ${{ git.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: [CI_Build_And_Test]
     steps:
@@ -34,11 +35,11 @@ jobs:
     - name: Build Docker image
       run: docker build --tag module8 .
 
-    - name: Login to Docker Hub
-      run: docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
-
     - name: Tag Docker image
       run: docker tag module8 cuffindall/module8
+
+    - name: Login to Docker Hub
+      run: docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
 
     - name: Publish to Docker Hub
       run: docker push cuffindall/module8
