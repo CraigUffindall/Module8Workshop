@@ -25,3 +25,12 @@ jobs:
     - name: Typescript test
       run: npm run test
       working-directory: ./DotnetTemplate.Web
+
+    - name: Build image
+      run: docker build tag module8 .
+
+    - name: Tag image
+      run: docker tag module8 cuffindall/module8
+
+    - name: Publish to Docker Hub
+      run: docker push cuffindall/module8
